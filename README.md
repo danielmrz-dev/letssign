@@ -92,9 +92,47 @@ Um fluxo guiado em 5 passos para o Admin (dados, signatários, campos, revisão 
 | Seleção de arquivo | Storage Access Framework (`application/pdf`) |
 | Visualização e validação de PDF | `PdfRenderer` |
 | Campos e assinatura | Canvas (posicionamento dos campos e captura da assinatura em PNG transparente) |
-| Segurança | Hash de senha com salt (BCrypt/PBKDF2), SHA-256 dos documentos, biometria/PIN na assinatura |
+| Segurança | Hash de senha com salt (PBKDF2), SHA-256 dos documentos, biometria/PIN na assinatura (`androidx.biometric`) |
+| Interface | Jetpack Compose + Material 3, Navigation Compose |
+| Escrita no PDF | PdfBox-Android (assinatura nos campos e página de registro de assinaturas) |
 
 > Persistência estruturada em **repositórios**, para permitir a troca futura por APIs REST sem impacto nas demais camadas.
+
+### Arquitetura do código
+
+MVVM com Jetpack Compose, organizado por funcionalidade. As telas dependem só das interfaces dos repositórios; a injeção de dependências fica em `di/AppContainer.kt`, então na Sprint 2 basta trocar a implementação Room por uma via API REST.
+
+```
+br.com.fiap.letssign
+├── core/
+│   ├── database/   entidades Room, DAOs, seed do Admin
+│   ├── model/      modelos de domínio e status
+│   ├── pdf/        importação e validação (PdfRenderer), renderização e carimbo (PdfBox-Android)
+│   ├── security/   hash de senha (PBKDF2 + salt) e SHA-256
+│   ├── session/    sessão persistida (DataStore)
+│   ├── storage/    arquivos em filesDir/documents/<docId>/
+│   └── util/       validações e formatação
+├── di/             AppContainer (troca Room → API na Sprint 2)
+├── feature/
+│   ├── auth/       splash e login
+│   ├── signers/    cadastro de signatários
+│   ├── documents/  home do Admin, assistente de 5 passos, regras e envio idempotente
+│   ├── tracking/   acompanhamento e linha do tempo
+│   ├── signing/    home do Signatário, assinatura e captura
+│   └── viewer/     visualização do PDF
+├── navigation/     rotas
+└── ui/             tema e componentes do selo.
+```
+
+| Regra de negócio | Onde está |
+|------------------|-----------|
+| Pelo menos 1 signatário | `ValidateDocumentUseCase` e `RoomDocumentRepository.send` |
+| Campo sempre ligado a um participante | `addField` exige signatário; validação antes do envio |
+| Campo dentro da página | `FieldGeometry.clamp` (ao arrastar e ao salvar) |
+| Dados obrigatórios validados | `ValidateDocumentUseCase` (lista de pendências na revisão) |
+| Documento enviado preservado | `requireDraft` bloqueia edição; "Nova versão" cria v2 e novo fluxo |
+| Concluído só com todos os obrigatórios | `RoomDocumentRepository.sign` |
+| Isolamento entre usuários | consultas filtradas por `ownerId` / vínculo do signatário |
 
 ### Posicionamento dos campos
 
@@ -147,6 +185,8 @@ Splash ─► Login ─┬─► Admin ──► Home ─┬─► Signatários 
 - Confirmação por biometria ou PIN antes de concluir a assinatura.
 - Modo desenvolvedor para simular falha de envio na demonstração.
 - Identidade visual própria, com cor de cada signatário refletida nos campos.
+- Página final de **registro de assinaturas** (quem assinou, papel, data e hora, hash) adicionada ao PDF concluído.
+- Compartilhamento do PDF assinado com outros apps.
 
 ---
 
@@ -161,10 +201,34 @@ Splash ─► Login ─┬─► Admin ──► Home ─┬─► Signatários 
 
 ### Acesso de demonstração
 
-| Perfil | E-mail | Senha |
-|--------|--------|-------|
-| Admin | `admin@letssign.com` | _(preencher)_ |
-| Signatário (Maria) | _(preencher)_ | _(preencher)_ |
+Criados automaticamente no primeiro uso (seed do Room). Na tela de login, os botões **Admin** e **Signatário (Maria)** preenchem os dados.
+
+| Perfil | Nome | E-mail | Senha |
+|--------|------|--------|-------|
+| Admin | Bruna Carvalho | `admin@letssign.com` | `admin@2026` |
+| Signatário | Maria Souza | `maria@studionorte.com.br` | `selo@2026` |
+| Signatário | João Pereira | `joao.pereira@gmail.com` | `selo@2026` |
+| Signatário | Ana Lima | `ana.lima@outlook.com` | `selo@2026` |
+| Signatário | Carlos Mendes | `carlos@mendesadv.com.br` | `selo@2026` |
+
+### PDFs para a demonstração
+
+A pasta `docs/demo/` tem dois arquivos para testar no emulador ou no celular (arraste para o emulador ou copie para a pasta Downloads):
+
+- `contrato_studio_norte.pdf`: contrato de 3 páginas para o fluxo completo;
+- `arquivo_corrompido.pdf`: arquivo quebrado para mostrar a validação na importação.
+
+### Modo desenvolvedor (falha simulada no envio)
+
+Na tela de **Revisão**, faça um **toque longo** na linha "Chave de envio". A próxima tentativa de envio simula uma queda de conexão: a transação é desfeita, o app mostra o motivo e o botão **Tentar novamente** reenvia com a mesma chave, sem duplicar convites.
+
+### Testes
+
+```bash
+./gradlew testDebugUnitTest
+```
+
+Cobrem as regras de negócio (`ValidateDocumentUseCase`), a geometria dos campos (`FieldGeometry`), as validações do cadastro e o hash de senha.
 
 ---
 

@@ -1,47 +1,26 @@
 package br.com.fiap.letssign
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import br.com.fiap.letssign.ui.theme.LetsSignTheme
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.fragment.app.FragmentActivity
+import br.com.fiap.letssign.di.LocalAppContainer
+import br.com.fiap.letssign.navigation.SeloNavHost
+import br.com.fiap.letssign.ui.theme.SeloTheme
 
-class MainActivity : ComponentActivity() {
+/** FragmentActivity é necessária para o BiometricPrompt (confirmação por biometria ou PIN). */
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val container = (application as SeloApplication).container
         setContent {
-            LetsSignTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            SeloTheme {
+                CompositionLocalProvider(LocalAppContainer provides container) {
+                    SeloNavHost()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    LetsSignTheme {
-        Greeting("Android")
     }
 }
