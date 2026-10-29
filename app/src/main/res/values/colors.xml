@@ -7,4 +7,18 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Cores da Splash Screen -->
+    <color name="splash_gradient_top">#FF3A1F9E</color>
+    <color name="splash_gradient_middle">#FF1A1080</color>
+    <color name="splash_gradient_bottom">#FF0A0A5C</color>
+    <color name="splash_icon_purple">#FF6C2FC4</color>
+    <color name="splash_dot_purple">#FFA855F7</color>
+    <color name="splash_light_lilac">#FFE9D5FF</color>
+
+    <!-- Cores da Tela de Login -->
+    <color name="login_border_lilac">#FFE2D9F8</color>
+    <color name="login_demo_bg">#FFF4F2FC</color>
+    <color name="login_demo_text">#FF5B5A70</color>
+    <color name="login_button_disabled">#FFBCA5E8</color>
 </resources>

@@ -1,3 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">LetsSign</string>
+    <string name="app_name">selo.</string>
+    <string name="splash_wordmark_main">selo</string>
+    <string name="splash_wordmark_dot">.</string>
+    <string name="splash_tagline">Assinatura eletrônica no seu bolso</string>
+    <string name="splash_checking_session">Verificando sessão…</string>
+    <string name="splash_partnership">em parceria com LetsSign</string>
+    <string name="splash_app_icon_description">Ícone do aplicativo selo.</string>
+
+    <!-- Tela de Login -->
+    <string name="login_header_title">Entre para preparar ou assinar seus documentos</string>
+    <string name="login_header_subtitle">Um só acesso para Admin e Signatário.</string>
+    <string name="login_label_email">E-mail</string>
+    <string name="login_placeholder_email">nome@empresa.com.br</string>
+    <string name="login_error_invalid_email">Digite um e-mail em formato válido.</string>
+    <string name="login_label_password">Senha</string>
+    <string name="login_placeholder_password">••••••••</string>
+    <string name="login_error_empty_password">A senha não pode estar em branco.</string>
+    <string name="login_error_invalid_credentials">E-mail ou senha incorretos.</string>
+    <string name="login_btn_submit">Entrar</string>
+    <string name="login_demo_title">ACESSO DE DEMONSTRAÇÃO</string>
+    <string name="login_demo_chip_admin">Admin</string>
+    <string name="login_demo_chip_signer">Signatário (Maria)</string>
+    <string name="login_cd_show_password">Mostrar senha</string>
+    <string name="login_cd_hide_password">Ocultar senha</string>
+    <string name="login_cd_admin_icon">Ícone de perfil do Administrador</string>
+    <string name="login_cd_signer_icon">Ícone de perfil do Signatário</string>
+
+    <!-- Strings para rotas/telas de teste placeholder -->
+    <string name="placeholder_login_title">Tela de Login (Placeholder)</string>
+    <string name="placeholder_admin_home_title">Home Admin (Placeholder)</string>
+    <string name="placeholder_signer_home_title">Home Signatário (Placeholder)</string>
+    <string name="placeholder_btn_login_as_admin">Simular login como ADMIN</string>
+    <string name="placeholder_btn_login_as_signer">Simular login como SIGNATARIO</string>
+    <string name="placeholder_btn_clear_session">Limpar sessão (Sem sessão)</string>
+    <string name="placeholder_session_info">Sessão atual: %s</string>
+    <string name="placeholder_no_session">Nenhuma sessão salva</string>
+    <string name="placeholder_btn_back_to_splash">Testar Splash Novamente</string>
 </resources>
